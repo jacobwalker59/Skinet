@@ -19,13 +19,27 @@ export class BasketService {
   basketTotal$ = this.basketTotalSource.asObservable();
   shipping = 0;
 
-  // subscribe to this to get the value of whatever the bread crumb/ value/s is/are
+  // subscribe to this to get the xvalue of whatever the bread crumb/ value/s is/are
   
   constructor(private http: HttpClient) { }
 
+  createPaymentIntent(){
+    return this.http.post(this.baseUrl + 'payments/' + this.getCurrentBasketValue().id, {})
+    .pipe(
+      map((basket:IBasket)=> {
+        this.basketSource.next(basket);
+       
+      })
+    );
+  }
+
   setShippingPrice(deliveryMethod:IDeliveryMethod){
     this.shipping = deliveryMethod.price;
+    const basket = this.getCurrentBasketValue();
+    basket.deliveryMethodId = deliveryMethod.id;
+    basket.shippingPrice = deliveryMethod.price;
     this.calculateTotals();
+    this.setBasket(basket);
   }
 
   getBasket(id: string){
@@ -35,6 +49,7 @@ export class BasketService {
       // maps it to a specific basket object
       map((basket: IBasket) => {
         this.basketSource.next(basket);
+        this.shipping = basket.shippingPrice;
         this.calculateTotals();
         console.log(this.getCurrentBasketValue());
         // in order to set the behaviour properties next value or property we use the next value above...

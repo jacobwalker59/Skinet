@@ -21,7 +21,7 @@ namespace API.Extensions
             services.AddScoped(typeof(IGenericRepository<>),(typeof(GenericRepository<>)));
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IUnitOfWork,UnitOfWork>();
-
+            services.AddScoped<IPaymentService, PaymentService>();
              services.Configure<ApiBehaviorOptions>(options =>
              {
                  //access to api controller
